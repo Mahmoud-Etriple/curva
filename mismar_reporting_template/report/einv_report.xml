@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_mismar" model="report.paperformat">
+        <field name="name">A4</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">48</field>
+        <field name="margin_bottom">30.00</field> <!-- Use larger margin to accommodate both cases -->
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">12</field>
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="True"/>
+    </record>
+
+    <template id="mismar_custom_layout" name="Payment Certificate Custom Layout">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+        <t t-if="not company">
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+        <!-- Set font variable -->
+        <t t-set="report_font" t-value="company.font or 'Arial'"/>
+
+        <!-- Custom header -->
+        <div class="header"
+             style="padding: 0; margin: 0; position: absolute; left: 0; right: 0; top: 0; z-index: 1000;">
+            <!-- Custom Header Image -->
+            <!-- Deterministic header height for every company: image is scaled to a
+                 fixed height (aspect preserved, no distortion, no clipping) and the
+                 container clips anything beyond, so the header never exceeds 150px
+                 (~42mm) regardless of the uploaded letterhead dimensions. This keeps
+                 it from overlapping the body below across all companies. -->
+            <div t-if="company.custom_image"
+                 style="width: 100%; height: 150px; overflow: hidden; text-align: center;">
+                <img t-att-src="image_data_uri(company.custom_image)"
+                     style="height: 150px; width: auto; max-width: 100%; display: block; margin: 0 auto;"
+                     alt="Company Header"/>
+            </div>
+            <!-- Fallback header: when the company has no uploaded letterhead image,
+                 render a standard text header (logo + name + address) from the
+                 company record so the document is never left without a header. -->
+            <div t-if="not company.custom_image"
+                 style="width: 100%; height: 150px; overflow: hidden; padding: 10px 18px; box-sizing: border-box;">
+                <table style="width: 100%; border: 0;">
+                    <tr>
+                        <td t-if="company.logo" style="width: 130px; vertical-align: top; border: 0;">
+                            <img t-att-src="image_data_uri(company.logo)"
+                                 style="height: 95px; width: auto;" alt="Company Logo"/>
+                        </td>
+                        <td style="vertical-align: top; border: 0; font-size: 12px; line-height: 1.35; padding-left: 14px;">
+                            <div style="font-weight: bold; font-size: 15px;">
+                                <span t-field="company.name"/>
+                            </div>
+                            <div t-if="company.partner_id.street">
+                                <span t-field="company.partner_id.street"/>
+                            </div>
+                            <div t-if="company.partner_id.street2">
+                                <span t-field="company.partner_id.street2"/>
+                            </div>
+                            <div t-if="company.partner_id.country_id">
+                                <span t-field="company.partner_id.country_id.name"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Article content -->
+        <div class="article"
+             t-attf-style="font-family: #{report_font}, sans-serif;"
+             t-att-data-oe-model="o and o._name"
+             t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-out="0"/>
+
+            <!-- Add spacer when no custom footer to push content up -->
+            <div t-if="not company.custom_footer_image" style="height: 20mm;"></div>
+        </div>
+
+        <!-- Footer with custom image -->
+        <div t-if="company.custom_footer_image" class="footer o_background_footer" style="padding: 0; margin: 0; margin-top: -10px; position: absolute; left: 0; right: 0; top: 0; z-index: 1000;">
+            <div class="text-center" >
+                <img t-att-src="image_data_uri(company.custom_footer_image)"
+                     style="width: 100%; background: linear-gradient(to right, #ff6600 0%, #ff6600 30%, #f0f0f0 30%, #f0f0f0 100%); height: 120px; position: relative;"/>
+                <div style="margin-top: 10px; font-size: 10px;">
+                    <span t-field="company.name"/>
+                    - Page
+                    <span class="page"/>
+                    of
+                    <span class="topage"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Default footer (smaller) if no custom image -->
+        <div t-if="not company.custom_footer_image" class="footer o_background_footer"
+             t-attf-style="font-family: #{report_font}, sans-serif;">
+            <div class="text-center"
+                 t-attf-style="border-top: 1px solid #ddd; padding-top: 5px; font-size: 10px; font-family: #{report_font}, sans-serif;">
+                <span t-field="company.name"/>
+                - Page
+                <span class="page"/>
+                of
+                <span class="topage"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- ============================================================
+         SHARED inline letterhead used by BOTH the SA Invoice and the
+         Proforma reports. Edit it HERE once and both reports update
+         together (no more divergence between the two).
+         It is a normal in-flow block (NOT position:absolute), so it
+         always renders and the body starts below it (no overlap/drop).
+         Expects `company` in context (callers set company = o.company_id).
+         ============================================================ -->
+    <template id="inline_letterhead" name="Shared Inline Letterhead">
+        <t t-if="not company and o" t-set="company" t-value="o.company_id"/>
+        <div style="margin-bottom: 14px;">
+            <div t-if="company.custom_image" style="text-align: center; height: 150px; overflow: hidden;">
+                <img t-att-src="image_data_uri(company.custom_image)"
+                     style="max-height: 130px; max-width: 100%;" alt="Company Header"/>
+            </div>
+            <table t-else="" style="width: 100%; border: 0;">
+                <tr>
+                    <td t-if="company.logo" style="width: 130px; vertical-align: middle; border: 0;">
+                        <img t-att-src="image_data_uri(company.logo)"
+                             style="height: 100px; width: auto;" alt="Company Logo"/>
+                    </td>
+                    <td style="vertical-align: middle; border: 0; padding-left: 14px; font-size: 11px; line-height: 1.35;">
+                        <div style="font-weight: bold; font-size: 14px;">
+                            <span t-field="company.name"/>
+                        </div>
+                        <div t-if="company.partner_id.street"><span t-field="company.partner_id.street"/></div>
+                        <div t-if="company.partner_id.street2"><span t-field="company.partner_id.street2"/></div>
+                        <div t-if="company.partner_id.country_id"><span t-field="company.partner_id.country_id.name"/></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+</odoo>

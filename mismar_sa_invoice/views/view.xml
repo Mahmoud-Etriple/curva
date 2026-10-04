@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_partner_inherit_einv" model="ir.ui.view">
+            <field name="name">res.partner.inherit.einv</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='function']" position="after">
+                    <field name="arabic_name"></field>
+                    <field name="english_name"></field>
+                    <field name="arabic_project"></field>
+                    <field name="english_project"></field>
+                </xpath>
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="commercial_records"></field>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="res_company_inherit_einv" model="ir.ui.view">
+            <field name="name">res.company.inherit.einv</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="invoice_stamp_sa" widget="image"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

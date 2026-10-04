@@ -1,0 +1,31 @@
+<odoo>
+    <data>
+        <!-- Inherit Form View to Modify it -->
+        <record id="res_company_application" model="ir.ui.view">
+            <field name="name">res.company.application</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="invoice_signature" widget="image"/>
+                </xpath>
+
+                <xpath expr="//field[@name='parent_id']" position="after">
+                    <field name="custom_image" widget="image" />
+                    <field name="custom_footer_image" widget="image" />
+                    <field name="custom_image_filename" invisible="1"/>
+                    <field name="color" widget="color_picker"/>
+                    <field name="primary_color" widget="color"/>
+                    <field name="report_header"/>
+                    <field name="font"/>
+                    <field name="template_primary_color" widget="color"/>
+                    <field name="templates_primary_font" widget="color"/>
+                    <field name="template_secondary_color" widget="color"/>
+                    <field name="templates_secondary_font" widget="color"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
