@@ -22,3 +22,20 @@ class ResCompanyApplication(models.Model):
     invoice_signature = fields.Binary(
         string="Invoice Signature",
     )
+    bank_ids = fields.One2many(
+        "res.partner.bank",
+        "company_id",
+        string="Bank Accounts",
+    )
+
+    invoice_stamp = fields.Binary(string="Invoice Stamp")
+    loss_account_id = fields.Many2one(
+        "account.account",
+        string="Loss Account",
+        domain="[('deprecated', '=', False)]",
+    )
+    gain_account_id = fields.Many2one(
+        "account.account",
+        string="Gain Account",
+        domain="[('deprecated', '=', False)]",
+    )
