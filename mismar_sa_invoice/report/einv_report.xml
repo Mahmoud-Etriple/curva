@@ -12,12 +12,12 @@
              t-att-data-oe-model="o and o._name"
              t-att-data-oe-id="o and o.id"
              t-att-data-oe-lang="o and o.env.context.get('lang')">
-        <div class="page" style="font-size: 12px; line-height: 1.1;">
+            <div class="page" style="font-size: 12px; line-height: 1.1;">
 
-            <!-- Shared letterhead — defined ONCE in
-                 mismar_reporting_template.inline_letterhead and reused by both the
-                 invoice and the proforma, so they always stay in sync. -->
-            <t t-call="mismar_reporting_template.inline_letterhead"/>
+                <!-- Shared letterhead — defined ONCE in
+                     mismar_reporting_template.inline_letterhead and reused by both the
+                     invoice and the proforma, so they always stay in sync. -->
+                <t t-call="mismar_reporting_template.inline_letterhead"/>
 
                 <!-- Title Section with Invoice Number -->
                 <div class="row mb-3">
@@ -167,35 +167,30 @@
                     <div class="col-12">
                         <table class="table table-bordered" style="font-size: 13px;">
                             <tr>
-                                <td class=" text-center"
-                                    style="width: 50%; background-color: #f8f9fa; font-weight: bold; vertical-align: middle;"
-                                    rowspan="2">
+                                <td class="text-center"
+                                    style="width: 50%; background-color: #f8f9fa; font-weight: bold; vertical-align: middle;">
                                     Customer / العميل
                                 </td>
-                                <td class="text-center " style="font-size: 13px;width: 50%;" dir="rtl">
-                                    <span t-field="o.partner_id.arabic_name"/>
+                                <td class="text-center" style="font-size: 13px; width: 50%;">
+                                    <span t-field="o.partner_id.name"/>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="text-center" style="font-size: 13px;">
-                                    <span t-field="o.partner_id.english_name"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center"
-                                    style="font-size: 13px;width: 50%; background-color: #f8f9fa; font-weight: bold; vertical-align: middle;"
-                                    rowspan="2">
-                                    Project / المشروع
-                                </td>
-                                <td class="text-center " style="font-size: 13px;">
-                                    <span t-field="o.partner_id.arabic_project"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center" style="width: 50%;font-size: 13px;" dir="rtl">
-                                    <span t-field="o.partner_id.english_project"/>
-                                </td>
-                            </tr>
+
+<!--                            <tr>-->
+<!--                                <td class="text-center"-->
+<!--                                    style="font-size: 13px;width: 50%; background-color: #f8f9fa; font-weight: bold; vertical-align: middle;"-->
+<!--                                    rowspan="2">-->
+<!--                                    Project / المشروع-->
+<!--                                </td>-->
+<!--                                <td class="text-center " style="font-size: 13px;">-->
+<!--                                    <span t-field="o.partner_id.arabic_project"/>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <td class="text-center" style="width: 50%;font-size: 13px;" dir="rtl">-->
+<!--                                    <span t-field="o.partner_id.english_project"/>-->
+<!--                                </td>-->
+<!--                            </tr>-->
                             <tr>
                                 <td class="text-center"
                                     style="background-color: #f8f9fa; font-weight: bold; vertical-align: middle;font-size: 13px;"
