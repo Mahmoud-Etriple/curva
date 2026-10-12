@@ -3,7 +3,7 @@
     'author': 'Mismar',
     'website': 'https://www.mismar.ai',
     'version': '18.0.1.0.1',
-    'depends': ['base','base'],
+    'depends': ['base','account'],
     'category': 'Accounting',
     'data': [
         'xml/company.xml',

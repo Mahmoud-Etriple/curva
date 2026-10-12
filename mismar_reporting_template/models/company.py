@@ -32,10 +32,10 @@ class ResCompanyApplication(models.Model):
     loss_account_id = fields.Many2one(
         "account.account",
         string="Loss Account",
-        domain="[('deprecated', '=', False)]",
+        # domain="[('deprecated', '=', False)]",
     )
     gain_account_id = fields.Many2one(
         "account.account",
         string="Gain Account",
-        domain="[('deprecated', '=', False)]",
+        # domain="[('deprecated', '=', False)]",
     )
