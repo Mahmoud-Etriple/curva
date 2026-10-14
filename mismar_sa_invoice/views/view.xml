@@ -30,5 +30,28 @@
             </field>
         </record>
 
+        <record id="view_partner_bank_form_inherit_einv" model="ir.ui.view">
+            <field name="name">res.partner.bank.form.inherit.einv</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='acc_number']" position="after">
+                    <field name="iban"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_bank_tree_inherit_einv" model="ir.ui.view">
+            <field name="name">res.partner.bank.list.inherit.einv</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='acc_number']" position="after">
+                    <field name="iban" optional="show"/>
+                    <field name="acc_holder_name" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

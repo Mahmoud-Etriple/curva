@@ -483,9 +483,14 @@
                                     Beneficiary<br/>المستفيد
                                 </td>
                                 <td style="padding: 4px;vertical-align: middle;">
-                                    <span t-field="o.company_id.partner_id.english_name"/>
-                                    <br/>
-                                    <span dir="rtl" t-field="o.company_id.partner_id.arabic_name"/>
+                                    <t t-if="company_bank_account and company_bank_account.acc_holder_name">
+                                        <span t-field="company_bank_account.acc_holder_name"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="o.company_id.partner_id.english_name"/>
+                                        <br/>
+                                        <span dir="rtl" t-field="o.company_id.partner_id.arabic_name"/>
+                                    </t>
                                 </td>
                             </tr>
                             <tr t-if="company_bank_account">

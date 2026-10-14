@@ -44,6 +44,7 @@ class ResCompanyApplication(models.Model):
 class ResPartnerBank(models.Model):
     _inherit = "res.partner.bank"
 
+
     @api.onchange("bank_id")
     def _onchange_bank_id_set_bank_name(self):
         for rec in self:
