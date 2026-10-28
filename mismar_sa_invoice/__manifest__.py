@@ -2,7 +2,7 @@
     'name': 'Mismar Invoice SA',
     'author': 'Mismar',
     'website': 'https://www.mismar.ai',
-    'version': '18.0.1.0.1',
+    'version': '18.0.1.0.6',
     'depends': ['account','l10n_sa_edi','l10n_gcc_invoice','mismar_reporting_template'],
     'category': 'Accounting',
     'data': [

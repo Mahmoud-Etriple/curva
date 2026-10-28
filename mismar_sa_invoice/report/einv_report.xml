@@ -563,12 +563,106 @@
         </div>
     </template>
 
+    <!-- Journal entries are not invoices.  Keep their rendering separate from the
+         Saudi invoice document so invoice-only fields and totals are never used. -->
+    <template id="custom_journal_entry_document">
+        <t t-set="o" t-value="o.with_context(lang=lang)"/>
+        <t t-set="company" t-value="o.company_id"/>
+        <div class="article"
+             style="font-family: Arial, sans-serif;"
+             t-att-data-oe-model="o and o._name"
+             t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <div class="page" style="font-size: 12px; line-height: 1.2;">
+                <t t-call="mismar_reporting_template.inline_letterhead"/>
+
+                <h3 class="text-center mb-3">Journal Entry - قيد يومية</h3>
+
+                <table class="table table-bordered table-sm mb-3">
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold" style="width: 20%;">Entry No.<br/>رقم القيد</td>
+                            <td style="width: 30%;"><span t-field="o.name"/></td>
+                            <td class="fw-bold" style="width: 20%;">Date<br/>التاريخ</td>
+                            <td style="width: 30%;"><span t-field="o.date" t-options="{'widget': 'date'}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Journal<br/>اليومية</td>
+                            <td><span t-field="o.journal_id"/></td>
+                            <td class="fw-bold">Reference<br/>المرجع</td>
+                            <td><span t-field="o.ref"/></td>
+                        </tr>
+                        <tr t-if="o.partner_id">
+                            <td class="fw-bold">Partner<br/>الشريك</td>
+                            <td colspan="3"><span t-field="o.partner_id"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered table-sm">
+                    <thead>
+                        <tr style="background-color: #f8f9fa;">
+                            <th class="text-center">Account<br/>الحساب</th>
+                            <th class="text-center">Partner<br/>الشريك</th>
+                            <th class="text-center">Label<br/>البيان</th>
+                            <th class="text-center">Debit<br/>مدين</th>
+                            <th class="text-center">Credit<br/>دائن</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.line_ids" t-as="line">
+                            <td>
+                                <span t-field="line.account_id.code"/>
+                                <span t-field="line.account_id.name"/>
+                            </td>
+                            <td><span t-field="line.partner_id"/></td>
+                            <td><span t-field="line.name"/></td>
+                            <td class="text-end">
+                                <span t-field="line.debit"
+                                      t-options='{"widget": "monetary", "display_currency": o.company_currency_id}'/>
+                            </td>
+                            <td class="text-end">
+                                <span t-field="line.credit"
+                                      t-options='{"widget": "monetary", "display_currency": o.company_currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr class="fw-bold" style="background-color: #f8f9fa;">
+                            <td colspan="3" class="text-end">Total / الإجمالي</td>
+                            <td class="text-end">
+                                <span t-out="sum(o.line_ids.mapped('debit'))"
+                                      t-options='{"widget": "monetary", "display_currency": o.company_currency_id}'/>
+                            </td>
+                            <td class="text-end">
+                                <span t-out="sum(o.line_ids.mapped('credit'))"
+                                      t-options='{"widget": "monetary", "display_currency": o.company_currency_id}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div t-if="o.narration" class="mt-3">
+                    <strong>Notes / ملاحظات:</strong>
+                    <div t-field="o.narration"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <!-- Main report template -->
     <template id="custom_saudi_invoice">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-set="lang" t-value="o.partner_id.lang or o.env.user.lang"/>
                 <t t-call="mismar_sa_invoice.custom_saudi_invoice_document" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="custom_journal_entry">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang or o.env.user.lang"/>
+                <t t-call="mismar_sa_invoice.custom_journal_entry_document" t-lang="lang"/>
             </t>
         </t>
     </template>
@@ -598,8 +692,22 @@
         <field name="report_file">mismar_sa_invoice.custom_saudi_invoice</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
-        <field name="print_report_name">'Invoice - %s' % (object.name or "Draft ").replace('/', '')</field>
+        <field name="is_invoice_report" eval="True"/>
+        <field name="print_report_name">'Invoice - %s' % (object.name or 'Draft').replace('/', '')</field>
         <field name="domain" eval="[('move_type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))]"/>
+        <field name="paperformat_id" ref="paperformat_invoice_sa"/>
+    </record>
+
+    <!-- A separate action is essential: marking the invoice report as generic
+         makes Odoo stop using it as the default invoice PDF. -->
+    <record id="account_journal_entries_custom_sa" model="ir.actions.report">
+        <field name="name">Journal Entry PDF</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mismar_sa_invoice.custom_journal_entry</field>
+        <field name="report_file">mismar_sa_invoice.custom_journal_entry</field>
+        <field name="is_invoice_report" eval="False"/>
+        <field name="print_report_name">'Journal Entry - %s' % (object.name or 'Draft').replace('/', '')</field>
         <field name="paperformat_id" ref="paperformat_invoice_sa"/>
     </record>
 
