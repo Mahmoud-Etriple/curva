@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_journal_entry_trx" model="ir.actions.report">
+        <field name="name">Journal Entry (Trx #)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">entry_number.report_journal_entry_trx</field>
+        <field name="report_file">entry_number.report_journal_entry_trx</field>
+        <field name="print_report_name">'Journal Entry - %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_journal_entry_trx">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <h2 t-field="o.name"/>
+                        <table class="table table-borderless table-sm mt-3" style="width:100%;">
+                            <tr>
+                                <td><strong>Trx #:</strong></td>
+                                <td><strong>Accounting Date:</strong></td>
+                                <td><strong>Reference:</strong></td>
+                                <td><strong>Journal:</strong></td>
+                                <td><strong>Company:</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span t-field="o.entry_number"/></td>
+                                <td><span t-field="o.date"/></td>
+                                <td><span t-field="o.ref"/></td>
+                                <td><span t-field="o.journal_id.name"/></td>
+                                <td><span t-field="o.company_id.name"/></td>
+                            </tr>
+                        </table>
+
+                        <table class="table table-bordered table-sm mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Partner</th>
+                                    <th>Label</th>
+                                    <th class="text-end">Amount in Currency</th>
+                                    <th class="text-end">Debit</th>
+                                    <th class="text-end">Credit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="l">
+                                    <tr>
+                                        <td><span t-esc="l.account_id.display_name"/></td>
+                                        <td><span t-esc="l.partner_id.name"/></td>
+                                        <td><span t-esc="l.name"/></td>
+                                        <td class="text-end">
+                                            <span t-field="l.amount_currency"
+                                                  t-options='{"widget": "monetary", "display_currency": l.currency_id}'/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="l.debit"
+                                                  t-options='{"widget": "monetary", "display_currency": l.company_currency_id}'/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="l.credit"
+                                                  t-options='{"widget": "monetary", "display_currency": l.company_currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td colspan="4"><strong>Total</strong></td>
+                                    <td class="text-end">
+                                        <strong t-out="sum(o.line_ids.mapped('debit'))"
+                                                t-options='{"widget": "monetary", "display_currency": o.company_currency_id}'/>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong t-out="sum(o.line_ids.mapped('credit'))"
+                                                t-options='{"widget": "monetary", "display_currency": o.company_currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

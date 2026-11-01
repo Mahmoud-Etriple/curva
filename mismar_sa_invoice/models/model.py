@@ -44,6 +44,7 @@ class AccountMove(models.Model):
         return super().action_invoice_download_pdf()
 
 
+
 class AccountEinv(models.Model):
     _inherit = 'res.partner'
 

@@ -601,6 +601,17 @@
                     </div>
                 </div>
 
+                <!-- The independent transaction number added by entry_number.
+                     Keep it above the document title so it is easy to spot on
+                     printed and scanned journal entries. -->
+                <div t-if="o.entry_number" class="text-end" style="margin-bottom: 10px;">
+                    <div style="display: inline-block; border: 1.5px solid #222; padding: 6px 14px; font-size: 13px; line-height: 1.3; text-align: center;">
+                        <strong>Trx # / رقم الحركة</strong>
+                        <br/>
+                        <span t-field="o.entry_number" style="font-size: 15px; font-weight: bold;"/>
+                    </div>
+                </div>
+
                 <h3 class="text-center mb-3">Journal Entry - قيد يومية</h3>
 
                 <table class="table table-bordered table-sm mb-3">
