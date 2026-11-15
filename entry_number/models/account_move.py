@@ -11,14 +11,6 @@ class AccountMove(models.Model):
         index=True,
     )
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        seq = self.env['ir.sequence']
-        for vals in vals_list:
-            if not vals.get('entry_number'):
-                vals['entry_number'] = seq.next_by_code('account.move.entry.number')
-        return super().create(vals_list)
-
     def _compute_ref_from_lines(self):
         for move in self:
             labels = []
@@ -30,6 +22,12 @@ class AccountMove(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        seq = self.env['ir.sequence']
+        for vals in vals_list:
+            if not vals.get('entry_number'):
+                vals['entry_number'] = seq.next_by_code(
+                    'account.move.entry.number')
+
         moves = super().create(vals_list)
         for move in moves:
             if move.move_type == 'entry' and not move.ref:
