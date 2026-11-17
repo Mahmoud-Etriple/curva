@@ -396,7 +396,7 @@
                                 </td>
                                 <td class="text-end" style="width: 30%; padding: 4px;">
                                     <t t-set="non_retention_lines"
-                                       t-value="o.invoice_line_ids.filtered(lambda l: 'retention' not in l.name.lower() and 'retantion' not in l.name.lower())"/>
+                                       t-value="o.invoice_line_ids.filtered(lambda l: 'retention' not in (l.name or '').lower() and 'retantion' not in (l.name or '').lower())"/>
                                     <t t-set="taxable_amount"
                                        t-value="sum(non_retention_lines.mapped('price_subtotal'))"/>
 
@@ -430,7 +430,7 @@
                                 </t>
                             </t>
                             <t t-set="retention_line"
-                               t-value="o.invoice_line_ids.filtered(lambda l: 'retention' in l.name.lower() or 'retantion' in l.name.lower())"/>
+                               t-value="o.invoice_line_ids.filtered(lambda l: 'retention' in (l.name or '').lower() or 'retantion' in (l.name or '').lower())"/>
                             <t t-if="retention_line">
                                 <t t-set="retention_amount" t-value="sum(retention_line.mapped('price_total'))"/>
                                 <tr>

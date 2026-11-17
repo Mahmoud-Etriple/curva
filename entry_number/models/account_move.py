@@ -41,3 +41,6 @@ class AccountMove(models.Model):
                 if move.move_type == 'entry' and not move.ref:
                     move._compute_ref_from_lines()
         return res
+
+    x=5
+
