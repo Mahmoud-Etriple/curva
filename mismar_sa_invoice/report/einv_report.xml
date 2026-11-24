@@ -228,20 +228,20 @@
                                     <span t-field="o.partner_id.street2"/>
                                 </td>
                             </tr>
-                            <tr t-if="o.partner_id.commercial_records" style="font-size: 13px;">
-                                <td class="text-center" style="background-color: #f8f9fa; font-weight: bold;">
-                                    Commercial Record / السجل التجاري
-                                </td>
-                                <td class="text-center">
-                                    <span t-field="o.partner_id.commercial_records"/>
-                                </td>
-                            </tr>
                             <tr t-if="o.partner_id.vat" style="font-size: 13px;">
                                 <td class="text-center" style="background-color: #f8f9fa; font-weight: bold;">
                                     VAT No. / الرقم الضريبي
                                 </td>
                                 <td class="text-center">
                                     <span t-field="o.partner_id.vat"/>
+                                </td>
+                            </tr>
+                            <tr t-if="o.partner_id.commercial_records" style="font-size: 13px;">
+                                <td class="text-center" style="background-color: #f8f9fa; font-weight: bold;">
+                                    Commercial Record / السجل التجاري
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="o.partner_id.commercial_records"/>
                                 </td>
                             </tr>
                             <tr t-if="o.partner_id.email" style="font-size: 13px;">
