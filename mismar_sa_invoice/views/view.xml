@@ -13,8 +13,8 @@
                     <field name="arabic_project"></field>
                     <field name="english_project"></field>
                 </xpath>
-                <xpath expr="//field[@name='vat']" position="after">
-                    <field name="commercial_records"></field>
+                <xpath expr="//div[@name='vat_vies_container']" position="after">
+                    <field name="commercial_records" string="Commercial Record"/>
                 </xpath>
             </field>
         </record>
